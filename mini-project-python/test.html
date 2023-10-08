@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Text</title>
+    <style>
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice to Text</h1>
+    <button id="startButton">Start Recording</button>
+    <div id="output"></div>
+
+    <script>
+        const startButton = document.getElementById("startButton");
+        const outputDiv = document.getElementById("output");
+        let recognition = null;
+
+        startButton.addEventListener("click", toggleRecording);
+
+        function toggleRecording() {
+            if (recognition && recognition.running) {
+                recognition.stop();
+                startButton.innerText = "Start Recording";
+            } else {
+                recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+                recognition.onstart = function() {
+                    startButton.innerText = "Recording...";
+                };
+
+                recognition.onresult = function(event) {
+                    const result = event.results[0][0].transcript;
+                    outputDiv.innerHTML = "<p>You said: " + result + "</p>";
+                };
+
+                recognition.onend = function() {
+                    startButton.innerText = "Start Recording";
+                };
+
+                recognition.start();
+            }
+        }
+    </script>
+</body>
+</html>

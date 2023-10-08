@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #recognizedText {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Speech Recognition</h1>
+    <button id="startRecordingButton">Start Recording</button>
+    <p id="recognizedText"></p>
+
+    <script>
+        const startRecordingButton = document.getElementById("startRecordingButton");
+        const recognizedText = document.getElementById("recognizedText");
+        
+        let recording = false;
+
+        startRecordingButton.addEventListener("click", toggleRecording);
+
+        function toggleRecording() {
+            if (!recording) {
+                recording = true;
+                recognizedText.innerText = "Recording...";
+                startRecordingButton.disabled = true;
+
+                fetch("/recognize", { method: "POST" })
+                    .then(response => response.json())
+                    .then(data => {
+                        recording = false;
+                        startRecordingButton.disabled = false;
+                        recognizedText.innerText = "You said: " + data.text;
+                    })
+                    .catch(error => {
+                        recording = false;
+                        startRecordingButton.disabled = false;
+                        recognizedText.innerText = "Error: " + error.message;
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
